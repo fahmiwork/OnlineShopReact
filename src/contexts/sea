@@ -1,0 +1,62 @@
+// src/contexts/ProductContext.jsx
+import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
+
+const ProductContext = createContext();
+
+export function ProductProvider({ children }) {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState({
+        current_page: 1,
+        last_page: 1,
+    });
+
+    const fetchProducts = async (page = 1) => {
+        setLoading(true);
+        try {
+            const res = await axios.get(
+                `http://localhost:8000/api/posts?page=${page}`
+            );
+
+            const productArray = Array.isArray(res.data.data)
+                ? res.data.data
+                : res.data.data?.data || [];
+
+            setProducts(productArray);
+            setPagination({
+                current_page: res.data.current_page ?? 1,
+                last_page: res.data.last_page ?? 1,
+            });
+        } catch (err) {
+            console.error("Gagal ambil produk:", err);
+            setProducts([]); // fallback jika gagal
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts(page);
+    }, [page]);
+
+    return (
+        <ProductContext.Provider
+            value={{
+                products,
+                loading,
+                page,
+                setPage,
+                searchTerm,
+                setSearchTerm,
+                pagination,
+            }}
+        >
+            {children}
+        </ProductContext.Provider>
+    );
+}
+
+export const useProducts = () => useContext(ProductContext);
