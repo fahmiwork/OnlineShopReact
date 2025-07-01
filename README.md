@@ -18,4 +18,7 @@ If you are developing a production application, we recommend using TypeScript wi
 4. ketikkan npm install di terminal untuk install node modul nya (wajib install nodejs jika belum punya)
 5. ketikkan npm run dev di terminal untuk jalankan project
 
+Preview tampilan:
+
+![Preview](./preview.png)
    
